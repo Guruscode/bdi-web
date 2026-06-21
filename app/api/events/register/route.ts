@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { turso } from '@/lib/db'
+import { sendRegistrationEmail } from '@/lib/email'
 
 export async function POST(request: Request) {
   try {
@@ -17,20 +18,21 @@ export async function POST(request: Request) {
       )
     }
 
-    // Check if event exists and is published
+    // Check if event exists and is published, get full details for email
     const eventResult = await turso.execute({
-      sql: 'SELECT id, max_attendees FROM events WHERE id = ? AND published = 1',
+      sql: 'SELECT id, title, description, date, time, max_attendees FROM events WHERE id = ? AND published = 1',
       args: [eventId],
     })
 
-    if (!eventResult.rows[0]) {
+    const event = eventResult.rows[0]
+    if (!event) {
       return NextResponse.json(
         { error: 'Event not found or not available' },
         { status: 404 }
       )
     }
 
-    const maxAttendees = eventResult.rows[0].max_attendees as number | null
+    const maxAttendees = event.max_attendees as number | null
 
     // Check capacity
     if (maxAttendees) {
@@ -52,6 +54,15 @@ export async function POST(request: Request) {
       sql: 'INSERT INTO event_registrations (event_id, name, email, phone, notes) VALUES (?, ?, ?, ?, ?)',
       args: [eventId, name, email, phone, notes],
     })
+
+    // Send confirmation email (non-blocking — don't await to avoid delaying response)
+    sendRegistrationEmail({
+      to: email,
+      name,
+      eventTitle: event.title as string,
+      eventDate: event.date as string,
+      eventTime: event.time as string,
+    }).catch((err) => console.error('Failed to send confirmation email:', err))
 
     return NextResponse.json({ success: true })
   } catch (error) {
