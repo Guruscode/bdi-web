@@ -12,7 +12,7 @@ export function buildRegistrationEmail(event: {
   title: string
   date: string
   time: string
-}) {
+}, name: string) {
   const formattedDate = new Date(event.date).toLocaleDateString('en-US', {
     weekday: 'long',
     month: 'long',
@@ -45,6 +45,7 @@ export function buildRegistrationEmail(event: {
                   <polyline points="22 4 12 14.01 9 11.01"/>
                 </svg>
               </div>
+              <p style="margin:0 0 4px;font-size:15px;color:#6b7280;">Hi ${name},</p>
               <h1 style="margin:0 0 8px;font-size:22px;font-weight:700;color:#1a1a2e;">You're Registered!</h1>
               <p style="margin:0 0 24px;font-size:15px;color:#6b7280;line-height:1.5;">
                 You've successfully registered for<br>
@@ -122,7 +123,7 @@ export async function sendRegistrationEmail({
     title: eventTitle,
     date: eventDate,
     time: eventTime,
-  })
+  }, name)
 
   await transporter.sendMail({
     from: `"Beyond Degree" <${process.env.SMTP_EMAIL}>`,
