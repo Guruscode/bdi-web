@@ -72,7 +72,7 @@ export default function EventRegistrationForm({
             Connect with fellow attendees, get event reminders, and stay updated on future programs.
           </p>
           <a
-            href="https://chat.whatsapp.com/Kg3aLiYmR5p92XXb5YEVCI?mode=gi_t"
+            href="https://chat.whatsapp.com/JqEbDMllsCO09qQ7gSfFSn"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors text-sm"
